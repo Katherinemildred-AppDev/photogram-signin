@@ -1,5 +1,27 @@
 class UsersController < ApplicationController
  
+  def authenticate
+    un = params.fetch("input_username") #get username from params
+    pw = params.fetch("input_password") #get password from params
+
+   user = User.where({:username=>un}).at(0)
+
+     #if no record, redirect to sign in:
+
+     if user == nil
+      redirect_to("/user_sign_in", {:alert =>"No one by that name round these parts"})
+     else   #if there is a record, check password match; if not redirect to sign in form
+        if user.authenticate(pw)
+          session.store(:user_id, user.id) #if good, set cookie and take to homepage
+          redirect_to("/", {:notice=> "Welcome back, " + user.username + "!"})
+        else
+          redirect_to("/user_sign_in", {:alert=>"Nice try, sucker!"})
+        end
+     end
+     
+
+  end
+
   def toast_cookies
     reset_session #deletes cookies in that hash
     redirect_to("/",{:notice=>"See ya later!"})
@@ -9,6 +31,11 @@ class UsersController < ApplicationController
     render({:template=>"users/signup_form.html.erb"})
   end
   
+  def new_session_form
+    render({:template=>"users/signin_form.html.erb"})
+  end
+
+
   def index
     @users = User.all.order({ :username => :asc })
 
