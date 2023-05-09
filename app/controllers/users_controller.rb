@@ -18,7 +18,7 @@ class UsersController < ApplicationController
       end
     end
   end
-
+        #adding a note for myself for testing /git
   def toast_cookies
     reset_session #deletes cookies in that hash
     redirect_to("/", { :notice => "See ya later!" })
